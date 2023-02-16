@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Songs</title>
+    <link href="https://fonts.googleapis.com/css?family=Ek+Mukta" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="static/styles.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+    <!--Embed Code Start-->
+
+<script type="text/javascript" src="https://codegena.com/assets/js/youtube-embed.js"></script>
+<!--Embed Code End-->
+    {% include "navbar.html" %}
+
+    <script>
+        
+        function get_songs(genre){
+            var result =    `<table class="table table-striped">
+        <thead>
+          <tr>
+           
+          </tr>
+        </thead>
+        <tbody>`;
+
+            console.log("button clicked ", genre)
+            document.getElementById("songs").innerHTML = "";
+            $.get("/getnewmusic", { genre : genre}).done(function (data) {
+                
+                links = data["links"]
+                titles = data["titles"]
+                artists = data["artists"]
+
+                for(var i=0;i<links.length;i++){
+                    // var embed = songs[i].substring(32);
+                    // var link = `https://www.youtube.com/embed/` + embed;
+                    // var res = `<iframe width="300px" height="250px" 
+                    //             src="${link}">
+                    //             </iframe>`;
+                    // result += res;
+
+                    var title = titles[i];
+                    var link = links[i];
+                    var artist = artists[i];
+
+                    var res = `<tr class='song-row'>
+            <td> <a target="blank" href=${link}> <button class="song-button"> ${title} </button> </a></td>
+            <td>${artist}</td>
+          </tr>`;
+          result += res;
+  }
+  result += `</tbody>
+         </table> `
+                
+               
+                document.getElementById("songs").innerHTML = result;
+            });
+   
+        }
+             
+    </script>
+</head>
+<body>
+
+    <div id="buttons" class="container" style="width:70%">
+
+        <button class="b2" name="song-but" value="dance" onclick="get_songs(this.value)"><img src="static/images/dance.jpeg" height="200px" width="200px"></button>
+
+        <button class="b2"  name="song-but" value="sad"  onclick="get_songs(this.value)"><img src="static/images/sad.jpeg" height="200px" width="200px"></button>
+        <button class="b2"  name="song-but" value="romantic" onclick="get_songs(this.value)" ><img src="static/images/romantic.jpeg" height="200px" width="200px"></button>
+        <button class="b2"  name="song-but" value="devotion" onclick="get_songs(this.value)" ><img src="static/images/devotional.jpeg" height="200px" width="200px"></button>
+        <button class="b2"  name="song-but" value="motivation" onclick="get_songs(this.value)"><img src="static/images/motivation.jpeg" height="200px" width="200px"></button>
+        <button class="b2"  name="song-but" value="patriotic" onclick="get_songs(this.value)" ><img src="static/images/patriotic.jpeg" height="200px" width="200px"></button>
+    </div>
+
+
+    <div id="songs">
+
+
+    </div>
+    <div class="youtube" id="VIDEO_ID" src="IMAGE_URL" style="width:500px; height:294px;"></div>
+    
+
+
+</body>
+</html>

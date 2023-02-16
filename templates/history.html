@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>History</title>
+    <link href="https://fonts.googleapis.com/css?family=Ek+Mukta" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="static/styles.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+    {% include "navbar.html" %}
+
+    <script>
+        function Depression() {
+
+    $.get("/getDepression", { }).done(function (data) {
+    var res=`<table class="table table-striped">
+        <thead>
+          <tr>
+            <th scope="col"></th>
+            <th scope="col">समय</th>
+            <th scope="col">परिणाम</th>
+            <th scope="col"></th>
+          </tr>
+        </thead>
+        <tbody>`
+
+  console.log(data);
+  for(var i=0;i<data['depress'].length;i++){
+    const time = data["depress"][i]['time'];
+  var result = data["depress"][i]['result'];
+  const dominant = data["depress"][i]['dominant'];
+   let pattern = /negative/;
+   var ress = "";
+    if(pattern.test(result)){
+        ress='नकारात्मक';
+    } else ress='सकारात्मक';
+   
+   let per = /[0-9]+[%]/.exec(result);
+
+    var result1 = per + " " + ress;
+    if(result=="neutral"){
+        result1 = "तटस्थ"
+    }
+  var res1=`<tr>
+            <th scope="row">${i+1}</th>
+            <td>${time}</td>
+            <td>${result1}</td>
+            <td>${dominant}</td>
+          </tr>`
+    res += res1;
+  }
+  res += `</tbody>
+         </table> `
+  document.getElementById('depress').innerHTML=res;
+
+ 
+   
+});
+   
+}
+
+</script>
+</head>
+<body onload="Depression()">
+    
+   
+<div id="depress">
+
+    
+
+</div>
+
+
+</body>
+</html>

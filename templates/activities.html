@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>activities</title>
+    <link href="https://fonts.googleapis.com/css?family=Ek+Mukta" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="static/styles.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+    {% include "navbar.html" %}
+
+    <script>
+        function get_activities(){
+            $.get("/getActivities", { }).done(function (data) {
+                var res = `<div class="skills">
+                            <h2 class='acthead'>दी गई गतिविधियों को करने का प्रयास करें</h2>`;
+                var acts = data["activities"];
+
+                for(var i=0;i<acts.length;i++){
+                    var img = acts[i]["img"];
+                    var desc = acts[i]["desc"];
+                    var name = acts[i]["name"];
+
+                    var act = `<div class="skill-row">
+                    <img class="skill1" src="static/images/${img}" height="150px" width="150px" alt="coding">
+                    <h3>${name}</h3>
+                    <p>${desc}</p>
+                    </div>`;
+
+                    res += act;
+
+                }
+                res += `</div>`;
+                document.getElementById("acts").innerHTML = res;
+            });
+            
+            $.get("/getEmotions", { }).done(function (data) {
+                var dict = {'joy' : 'हर्ष', 'sad' : 'उदासी', 'anger' : 'क्रोध', 'fear' : 'डर', 'guilt': 'खेद', 'shame':'शर्म', 'disgust': 'घृणा'}
+                var xValues = [];
+                var yValues = [];
+
+                var result = data["per"];
+  
+   let pattern = /negative/;
+   var ress = "";
+    if(pattern.test(result)){
+        ress='नकारात्मक';
+    } else ress='सकारात्मक';
+   
+   let per = /[0-9]+[%]/.exec(result);
+
+    var result1 = per + " " + ress;
+    if(result=="neutral"){
+        result1 = "तटस्थ"
+    }
+    document.getElementById('chatresult').innerHTML=result1;
+
+                var emotions = data["emotions"]
+                console.log(emotions)
+                for(var x in emotions){
+                    xValues.push(dict[x]);
+                    yValues.push(emotions[x]);
+                }
+
+                var allZero = true;
+                for(var i in yValues){
+                    if(yValues[i]!=0){
+                        allZero = false;
+                    }
+                }
+                if(allZero==true){
+                    return;
+                }
+                document.getElementById("myChart").style.width = "100%";
+                document.getElementById("myChart").style.maxWidth = "600px";
+                var barColors = [
+                "#b91d47",
+                "#00aba9",
+                "#2b5797",
+                "#e8c3b9",
+                "#1e7145",
+                "#13ECAB",
+                "#CB5F01"
+                ];
+
+                new Chart("myChart", {
+                    type: "pie",
+                    data: {
+                    labels: xValues,
+                    datasets: [{
+                    backgroundColor: barColors,
+                    data: yValues
+                    }]
+                    },
+                    options: {
+                        title: {
+                        display: true,
+                        
+                        }
+                    }
+                });
+                
+            });
+            
+            
+        }
+
+    </script>
+</head>
+<body onload="get_activities()">
+    <!-- <canvas id="myChart" style="width:100%;max-width:600px"></canvas> -->
+    <canvas id="myChart" style="width:0%"> </canvas>
+    <div id = "result">
+
+    </div>
+
+    <p class="chatresult" id="chatresult">  </p>
+
+    <div id = "acts">
+
+    </div>
+
+
+</body>
+</html>
